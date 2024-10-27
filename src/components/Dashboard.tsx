@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { BarChart2, TrendingUp, PieChart } from 'lucide-react';
-import { ColumnStats } from '../utils/dataProcessor';
-import { AnalysisResult } from '../utils/templateAnalysis';
-import { StatisticsPanel } from './StatisticsPanel';
-import { AnalysisPanel } from './AnalysisPanel';
-import ChartDisplay from './ChartDisplay';
-import { FileUploadZone } from './FileUploadZone';
-import AnalysisTemplates from './AnalysisTemplates';
-import DataPreview from './DataPreview';
+import React, { useState } from "react";
+import { BarChart2, TrendingUp, PieChart } from "lucide-react";
+import { ColumnStats } from "../utils/dataProcessor";
+import { AnalysisResult } from "../utils/templateAnalysis";
+import { StatisticsPanel } from "./StatisticsPanel";
+import { AnalysisPanel } from "./AnalysisPanel";
+import ChartDisplay from "./ChartDisplay";
+import { FileUploadZone } from "./FileUploadZone";
+import AnalysisTemplates from "./AnalysisTemplates";
+import DataPreview from "./DataPreview";
 
 interface DashboardProps {
   stats: ColumnStats[];
@@ -16,10 +16,15 @@ interface DashboardProps {
   onDataLoaded: (data: string[][], stats: any[]) => void;
 }
 
-export function Dashboard({ stats, analysis, data = [], onDataLoaded }: DashboardProps) {
+export function Dashboard({
+  stats,
+  analysis,
+  data = [],
+  onDataLoaded,
+}: DashboardProps) {
   const [activeTemplate, setActiveTemplate] = useState<string | null>(null);
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string>('');
+  const [fileName, setFileName] = useState<string>("");
 
   const handleFileUpload = (files: FileList | null) => {
     if (files && files[0]) {
@@ -28,9 +33,9 @@ export function Dashboard({ stats, analysis, data = [], onDataLoaded }: Dashboar
       const reader = new FileReader();
       reader.onload = (e) => {
         const text = e.target?.result as string;
-        const rows = text.split('\n').map(row => 
-          row.split(',').map(cell => cell.trim())
-        );
+        const rows = text
+          .split("\n")
+          .map((row) => row.split(",").map((cell) => cell.trim()));
         onDataLoaded(rows, []);
       };
       reader.readAsText(file);
@@ -40,9 +45,9 @@ export function Dashboard({ stats, analysis, data = [], onDataLoaded }: Dashboar
   const handleTemplateSelect = (templateId: string) => {
     setActiveTemplate(templateId);
     const metricMap: Record<string, string> = {
-      'sales-analysis': 'revenue',
-      'traffic-analysis': 'visitors',
-      'product-metrics': 'usage'
+      "sales-analysis": "revenue",
+      "traffic-analysis": "visitors",
+      "product-metrics": "usage",
     };
     setSelectedMetric(metricMap[templateId] || null);
   };
@@ -51,7 +56,9 @@ export function Dashboard({ stats, analysis, data = [], onDataLoaded }: Dashboar
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Welcome to DataAnalyzer</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Welcome to DataAnalyzer
+          </h1>
           <p className="mt-2 text-lg text-gray-600">
             Upload your data or choose a template to get started
           </p>
@@ -68,9 +75,21 @@ export function Dashboard({ stats, analysis, data = [], onDataLoaded }: Dashboar
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                { id: 'sales', name: 'Sales Data', description: 'Revenue, products, dates' },
-                { id: 'traffic', name: 'Website Traffic', description: 'Visitors, pages, sources' },
-                { id: 'product', name: 'Product Metrics', description: 'Usage, retention, engagement' }
+                {
+                  id: "sales",
+                  name: "Sales Data",
+                  description: "Revenue, products, dates",
+                },
+                {
+                  id: "traffic",
+                  name: "Website Traffic",
+                  description: "Visitors, pages, sources",
+                },
+                {
+                  id: "product",
+                  name: "Product Metrics",
+                  description: "Usage, retention, engagement",
+                },
               ].map((template) => (
                 <button
                   key={template.id}
@@ -78,8 +97,12 @@ export function Dashboard({ stats, analysis, data = [], onDataLoaded }: Dashboar
                   className="flex items-center p-4 border border-gray-200 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition-colors"
                 >
                   <div className="text-left">
-                    <h5 className="text-sm font-medium text-gray-900">{template.name}</h5>
-                    <p className="text-xs text-gray-500">{template.description}</p>
+                    <h5 className="text-sm font-medium text-gray-900">
+                      {template.name}
+                    </h5>
+                    <p className="text-xs text-gray-500">
+                      {template.description}
+                    </p>
                   </div>
                 </button>
               ))}
@@ -95,27 +118,29 @@ export function Dashboard({ stats, analysis, data = [], onDataLoaded }: Dashboar
       <div className="grid grid-cols-1 gap-8">
         {data && data.length > 0 && (
           <>
-            <DataPreview 
-              data={data.slice(0, 6)} 
+            <DataPreview
+              data={data.slice(0, 6)}
               fileName={fileName}
               columnStats={stats}
             />
 
             <div className="bg-white rounded-lg shadow-sm">
-              <ChartDisplay 
+              <ChartDisplay
                 data={data}
                 title="Data Visualization"
-                columns={stats.map(stat => stat.name)}
-                defaultMetric={selectedMetric || stats.find(s => s.type === 'number')?.name}
+                columns={stats.map((stat) => stat.name)}
+                defaultMetric={
+                  selectedMetric || stats.find((s) => s.type === "number")?.name
+                }
               />
             </div>
           </>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <StatisticsPanel 
-            stats={stats} 
-            analysisType={activeTemplate || 'general'} 
+          <StatisticsPanel
+            stats={stats}
+            analysisType={activeTemplate || "general"}
           />
           {analysis && <AnalysisPanel analysis={analysis} />}
         </div>
@@ -124,19 +149,19 @@ export function Dashboard({ stats, analysis, data = [], onDataLoaded }: Dashboar
           {[
             {
               icon: <BarChart2 className="h-6 w-6" />,
-              title: 'Export Report',
-              description: 'Download analysis as PDF or Excel'
+              title: "Export Report",
+              description: "Download analysis as PDF or Excel",
             },
             {
               icon: <TrendingUp className="h-6 w-6" />,
-              title: 'Schedule Analysis',
-              description: 'Set up automated reports'
+              title: "Schedule Analysis",
+              description: "Set up automated reports",
             },
             {
               icon: <PieChart className="h-6 w-6" />,
-              title: 'Share Results',
-              description: 'Collaborate with your team'
-            }
+              title: "Share Results",
+              description: "Collaborate with your team",
+            },
           ].map((action, index) => (
             <button
               key={index}
