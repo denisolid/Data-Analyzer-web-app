@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = "http://localhost:5000/api";
 
 export interface LoginCredentials {
   username: string;
@@ -21,69 +21,88 @@ export interface AuthResponse {
   };
 }
 
-export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
+export const login = async (
+  credentials: LoginCredentials
+): Promise<AuthResponse> => {
   try {
     // Add admin bypass
-    if (credentials.username === 'admin' && credentials.password === 'admin') {
+    if (credentials.username === "admin" && credentials.password === "admin") {
       const mockResponse = {
-        token: 'admin-mock-token',
+        token: "admin-mock-token",
         user: {
-          id: 'admin',
-          username: 'admin'
-        }
+          id: "admin",
+          username: "admin",
+        },
       };
-      localStorage.setItem('auth_token', mockResponse.token);
-      localStorage.setItem('user', JSON.stringify(mockResponse.user));
+      localStorage.setItem("auth_token", mockResponse.token);
+      localStorage.setItem("user", JSON.stringify(mockResponse.user));
       return mockResponse;
     }
 
-    const response = await axios.post<AuthResponse>(`${API_URL}/auth/login`, credentials);
-    localStorage.setItem('auth_token', response.data.token);
-    localStorage.setItem('user', JSON.stringify(response.data.user));
+    const response = await axios.post<AuthResponse>(
+      `${API_URL}/auth/login`,
+      credentials,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // Store auth data
+    localStorage.setItem("auth_token", response.data.token);
+    localStorage.setItem("user", JSON.stringify(response.data.user));
+
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.message || 'Login failed');
+      throw new Error(error.response?.data?.message || "Login failed");
     }
     throw error;
   }
 };
 
-export const signup = async (credentials: SignupCredentials): Promise<AuthResponse> => {
+export const signup = async (
+  credentials: SignupCredentials
+): Promise<AuthResponse> => {
   try {
-    // Mock signup functionality
-    const mockResponse = {
-      token: `${credentials.username}-mock-token`,
-      user: {
-        id: Date.now().toString(),
-        username: credentials.username
+    const response = await axios.post<AuthResponse>(
+      `${API_URL}/auth/signup`,
+      credentials,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
-    };
-    localStorage.setItem('auth_token', mockResponse.token);
-    localStorage.setItem('user', JSON.stringify(mockResponse.user));
-    return mockResponse;
+    );
+
+    // Store auth data
+    localStorage.setItem("auth_token", response.data.token);
+    localStorage.setItem("user", JSON.stringify(response.data.user));
+
+    return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.message || 'Signup failed');
+      throw new Error(error.response?.data?.message || "Signup failed");
     }
     throw error;
   }
 };
 
 export const logout = (): void => {
-  localStorage.removeItem('auth_token');
-  localStorage.removeItem('user');
+  localStorage.removeItem("auth_token");
+  localStorage.removeItem("user");
 };
 
 export const getAuthToken = (): string | null => {
-  return localStorage.getItem('auth_token');
+  return localStorage.getItem("auth_token");
 };
 
 export const getCurrentUser = (): { id: string; username: string } | null => {
-  const userStr = localStorage.getItem('user');
+  const userStr = localStorage.getItem("user");
   return userStr ? JSON.parse(userStr) : null;
 };
 
 export const getAuthHeader = () => ({
-  Authorization: `Bearer ${getAuthToken()}`
+  Authorization: `Bearer ${getAuthToken()}`,
 });
