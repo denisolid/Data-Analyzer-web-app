@@ -1,5 +1,5 @@
-import React from 'react';
-import { BarChart3 } from 'lucide-react';
+import React from "react";
+import { BarChart3 } from "lucide-react";
 
 const Navbar = () => {
   return (
@@ -9,7 +9,9 @@ const Navbar = () => {
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
               <BarChart3 className="h-8 w-8 text-indigo-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900">DataAnalyzer</span>
+              <span className="ml-2 text-xl font-bold text-gray-900">
+                DataAnalyzer
+              </span>
             </div>
           </div>
           <div className="flex items-center">
